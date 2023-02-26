@@ -31,8 +31,12 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable long id) {
-        return bookService.getBookById(id);
+    public Optional<Book> getBookById(@PathVariable long id) {
+        Optional<Book> optionalBook = bookService.getBookById(id);
+        if (optionalBook.isPresent()) {
+            return optionalBook;
+        }
+        return null;
     }
 
     @PutMapping("/{id}")
