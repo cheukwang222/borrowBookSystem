@@ -34,12 +34,14 @@ public class BorrowBookSystemApplicationTests {
 
     @Test
     public void testCreateBook() {
+		// Create a new book
         Book book = new Book();
         book.setTitle("Test Book");
         book.setDescription("This is a test book");
         book.setAuthor("Test Author");
         book.setPublishDate(new Date());
 
+		// Send request to create the book
         ResponseEntity<Book> response = restTemplate.postForEntity("/api/books", book, Book.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -49,6 +51,7 @@ public class BorrowBookSystemApplicationTests {
 
     @Test
     public void testListBooks() {
+		// Create some new book
         List<Book> books = Arrays.asList(
                 new Book("Book 1", "Author 1", false, "Description 1", new Date()),
                 new Book("Book 2", "Author 2", false, "Description 2", new Date()),
@@ -56,6 +59,7 @@ public class BorrowBookSystemApplicationTests {
         );
         bookRepository.saveAll(books);
 
+		// Send request to list the book
         ResponseEntity<List<Book>> response = restTemplate.exchange("/api/books", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<Book>>() {});
 
@@ -65,9 +69,11 @@ public class BorrowBookSystemApplicationTests {
 
     @Test
     public void testGetBook() {
+		// Create a new book
         Book book = new Book("Test Book", "Test Author", false, "This is a test book", new Date());
         bookRepository.save(book);
 
+		// Send Get request to get the book
         ResponseEntity<Book> response = restTemplate.getForEntity("/api/books/{id}", Book.class, book.getId());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -77,11 +83,14 @@ public class BorrowBookSystemApplicationTests {
 
     @Test
     public void testDeleteBook() {
+		// Create a new book
         Book book = new Book("Test Book", "Test Author", false, "This is a test book", new Date());
         bookRepository.save(book);
 
+		// Send Delete request to delete the book
         restTemplate.delete("/api/books/{id}", book.getId());
 
+		// Verify that the book was deleted in the database
         assertFalse(bookRepository.findById(book.getId()).isPresent());
     }
 
