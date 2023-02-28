@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.test.borrowBookSystem.repository.BookRepository;
+import com.test.borrowBookSystem.exception.BookNotAvailableException;
 import com.test.borrowBookSystem.model.Book;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +34,9 @@ public class BookService {
             Book existingBook = optionalBook.get();
             existingBook.setTitle(book.getTitle());
             existingBook.setAuthor(book.getAuthor());
+            existingBook.setDescription(book.getDescription());
             existingBook.setBorrowed(book.isBorrowed());
+            existingBook.setPublishDate(book.getPublishDate());
             return bookRepository.save(existingBook);
         }
         return null;
@@ -39,5 +44,17 @@ public class BookService {
 
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
+    }
+
+    public Book borrowBook(long id) {
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            if (!book.isBorrowed()) {
+                book.setBorrowed(true);
+                return bookRepository.save(book);
+            }
+        } 
+        throw new BookNotAvailableException("Book not available");
     }
 }
